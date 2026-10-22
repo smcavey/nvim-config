@@ -1,9 +1,10 @@
 return {
   {
     "neovim/nvim-lspconfig",
-    ft = { "go", "gomod", "gowork" },
+    ft = { "go" },
     config = function()
       vim.lsp.config("gopls", {
+        filetypes = { "go" },
         settings = {
           gopls = {
             completeUnimported = true,
@@ -48,19 +49,22 @@ return {
             vim.lsp.buf.format({ async = true })
           end, "Format buffer")
 
-          vim.api.nvim_clear_autocmds({ group = group, buffer = event.buf })
-          vim.api.nvim_create_autocmd("BufWritePre", {
-            group = group,
-            buffer = event.buf,
-            callback = function()
-              vim.lsp.buf.format({
-                bufnr = event.buf,
-                filter = function(client)
-                  return client.name == "gopls"
-                end,
-              })
-            end,
-          })
+          if vim.bo[event.buf].filetype == "go" then
+            vim.api.nvim_clear_autocmds({ group = group, buffer = event.buf })
+            vim.api.nvim_create_autocmd("BufWritePre", {
+              group = group,
+              buffer = event.buf,
+              callback = function()
+                vim.lsp.buf.format({
+                  bufnr = event.buf,
+                  timeout_ms = 2000,
+                  filter = function(client)
+                    return client.name == "gopls"
+                  end,
+                })
+              end,
+            })
+          end
         end,
       })
     end,
