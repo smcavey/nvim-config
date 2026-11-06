@@ -25,5 +25,8 @@ require("lazy").setup({
     -- Automatically import any plugin files you put inside lua/plugins/
     { import = "plugins" },
   },
-  checker = { enabled = true }, -- Check for plugin updates automatically
+  checker = {
+    enabled = true,
+    notify = false,
+  }, -- Check for plugin updates without notifications
 })
